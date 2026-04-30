@@ -1,5 +1,5 @@
 <?php
-require 'dev/debug.php';
+require 'includes/index.php';
 
 $input = fopen('php://input', 'r');
 

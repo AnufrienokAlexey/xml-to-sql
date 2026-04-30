@@ -1,0 +1,17 @@
+{
+    "name": "alexey/xml-to-sql",
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alexey Anufrienok",
+            "email": "alex.anufrienok@gmail.com"
+        }
+    ],
+    "require": {
+        "ext-pdo": "*"
+    }
+}
