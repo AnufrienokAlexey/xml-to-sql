@@ -11,5 +11,5 @@ $username = $config['username'];
 $password = $config['password'];
 
 $connect = new Connect("$host", "$database", "$charset", "$username", "$password");
-
-dd($connect);
+dd($connect->getAllTable());
+dd($connect->createTable('personss'));

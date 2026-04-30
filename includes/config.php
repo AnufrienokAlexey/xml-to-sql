@@ -2,7 +2,7 @@
 
 return [
 	'host'     => 'localhost',
-	'dbname'   => 'xml-to-sql',
+	'dbname'   => 'xml_to_sql',
 	'charset'  => 'utf8',
 	'username' => 'admin',
 	'password' => 'admin',
