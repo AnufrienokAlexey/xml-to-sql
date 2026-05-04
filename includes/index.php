@@ -12,4 +12,4 @@ $password = $config['password'];
 
 $connect = new Connect("$host", "$database", "$charset", "$username", "$password");
 dd($connect->getAllTable());
-dd($connect->createTable('personss'));
+dd($connect->createTable("tgsssssfqssqqwwwf"));

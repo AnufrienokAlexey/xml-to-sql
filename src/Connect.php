@@ -39,7 +39,6 @@ class Connect extends Db {
             $sth->bindValue('table', $table);
             $sth->execute();
             return $sth->fetchAll(PDO::FETCH_ASSOC);
-            //  return $this->getDatabase()->query("SELECT * FROM $dbname");
         }
         catch(PDOException $e) {
             $this->getException($e, $dbname);
@@ -52,18 +51,13 @@ class Connect extends Db {
             echo "Таблица $table уже существует. Новая таблица с таким именем не будет создана.";
             return;
         }
-        $dbname = parent::getDbname();
         try {
-            $sth = $this->getDatabase()->prepare("
-                CREATE TABLE IF NOT EXISTS rest';
-            ");
-            // $sth->bindValue(':table', $table);
-            $sth->execute();
-            return $sth->fetchAll(PDO::FETCH_ASSOC);
-            // return "Новая таблица $table успешно создана в базе данных $dbname";
+            $sth = $this->getDatabase();
+            $sth->exec("CREATE TABLE IF NOT EXISTS $table (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL)");
+            return "Новая таблица $table успешно создана";
         }
         catch(PDOException $e) {
-            $this->getException($e, $dbname);
+            $this->getException($e, "Ошибка createTable(): " . $e->getMessage());
         }
     }
 }
