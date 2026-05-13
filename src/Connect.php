@@ -2,7 +2,7 @@
 
 class Connect extends Db {
 
-    public function getDatabase() : PDO
+    public function connect() : PDO
     {
         $host = parent::getHost();
         $username = parent::getUsername();
@@ -13,35 +13,34 @@ class Connect extends Db {
         return new PDO("mysql:host=$host;dbname=$dbname;charset=$charset", "$username", "$password");
     }
 
-    public function getException(Exception $e, string $dbname): void
+    public function getException(Exception $e): void
     {
-        echo "Неудачная попытка подключения к базе данных $dbname: " . $e->getMessage();
+        echo "Неудачная попытка подключения к базе данных " . parent::getDbname() . " " . $e->getMessage();
     }
 
     public function getAllTable()
     {
         $dbname = parent::getDbname();
         try {
-            $sth = $this->getDatabase()->prepare("SHOW TABLES");
+            $sth = $this->connect()->prepare("SHOW TABLES");
             $sth->execute();
             return $sth->fetchAll(PDO::FETCH_COLUMN);
         }
         catch(PDOException $e) {
-            $this->getException($e, $dbname);
+            $this->getException($e);
         }
     }
 
         public function getTable(string $table)
     {
-        $dbname = parent::getDbname();
         try {
-            $sth = $this->getDatabase()->prepare("SHOW TABLES LIKE :table");
+            $sth = $this->connect()->prepare("SHOW TABLES LIKE :table");
             $sth->bindValue('table', $table);
             $sth->execute();
             return $sth->fetchAll(PDO::FETCH_ASSOC);
         }
         catch(PDOException $e) {
-            $this->getException($e, $dbname);
+            $this->getException($e);
         }
     }
 
@@ -52,12 +51,12 @@ class Connect extends Db {
             return;
         }
         try {
-            $sth = $this->getDatabase();
+            $sth = $this->connect();
             $sth->exec("CREATE TABLE IF NOT EXISTS $table (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL)");
             return "Новая таблица $table успешно создана";
         }
         catch(PDOException $e) {
-            $this->getException($e, "Ошибка createTable(): " . $e->getMessage());
+            $this->getException($e);
         }
     }
 }
