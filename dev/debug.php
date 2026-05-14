@@ -9,3 +9,8 @@ function dd(mixed $data)
     var_dump($data);
     echo '</pre>';
 }
+
+// function clearAccessLog()
+// {
+//     file_put_contents('/var/www/xml-to-sql/errors/access.log', '');
+// }
