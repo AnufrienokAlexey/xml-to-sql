@@ -1,7 +1,7 @@
 <?php
 
-class Connect extends Db {
-
+class Connect extends Db
+{
     public function connect() : PDO
     {
         $host = parent::getHost();
@@ -54,6 +54,20 @@ class Connect extends Db {
             $sth = $this->connect();
             $sth->exec("CREATE TABLE IF NOT EXISTS $table (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL)");
             return "Новая таблица $table успешно создана";
+        }
+        catch(PDOException $e) {
+            $this->getException($e);
+        }
+    }
+
+    public function dropAllTables()
+    {
+        try {
+            $sth = $this->connect();
+            $db = parent::getDbname();
+            // $sth->bindValue('db', parent::getDbname());
+            $sth->exec("DROP DATABASE $db");
+            return true;
         }
         catch(PDOException $e) {
             $this->getException($e);
