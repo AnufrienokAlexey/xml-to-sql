@@ -2,7 +2,7 @@
 
 class Host extends Db
 {
-    public function connectToHost()
+    private function connectToHost()
     {
         try {
             $host = parent::getHost();
@@ -11,9 +11,8 @@ class Host extends Db
 
             return new PDO("mysql:host=$host", $username, $password);
         }
-
         catch (PDOException $e) {
-            return "error";
+            return self::getPdoException($e);
         }
     }
 
@@ -24,9 +23,8 @@ class Host extends Db
             $sth->execute();
             return $sth->fetchAll(PDO::FETCH_COLUMN);
         }
-
         catch (PDOException $e) {
-            return "Error createDb(): " . $e->getMessage();
+            return self::getPdoException($e);
         }
     }
 }

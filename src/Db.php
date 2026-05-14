@@ -41,4 +41,9 @@ class Db
     {
         return $this->password;
     }
+
+    protected function getPdoException(PDOException $e): string
+    {
+        return "Error: " . $e->getMessage();
+    }
 }
