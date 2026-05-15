@@ -5,14 +5,14 @@ namespace app\Core;
 use PDO;
 use PDOException;
 
-class Db
+class Host
 {
-    protected static ?Db $_instance = null;
+    protected static ?Host $_instance = null;
     private PDO $pdo;
 
-    private function __construct(string $host, string $dbname, string $charset, string $username, string $password)
+    private function __construct(string $host, string $username, string $password)
     {
-        $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
+        $dsn = "mysql:host=$host";
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -30,8 +30,6 @@ class Db
         if (is_null(self::$_instance)) {
             self::$_instance = new self(
                 getenv('DB_HOST'),
-                getenv('DB_NAME'),
-                getenv('DB_CHARSET'),
                 getenv('DB_USER'),
                 getenv('DB_PASS'),
             );
@@ -44,17 +42,4 @@ class Db
     {
         return "Error: " . $e->getMessage();
     }
-
-    private static function createDb(string $dbname): void
-    {
-        try {
-            $stm = Db::getInstance()->prepare(
-                "CREATE DATABASE IF NOT EXISTS $dbname COLLATE utf8_general_ci;"
-            );
-            $stm->execute();
-        } catch (\PDOException $e) {
-            error_log($e->getMessage());
-        }
-    }
-
 }

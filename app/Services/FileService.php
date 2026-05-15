@@ -8,6 +8,11 @@ use PDO;
 
 class FileService
 {
+    public static function setData(): void
+    {
+
+    }
+    
     public static function add($file): void
     {
         if (UserService::isAuth()) {
