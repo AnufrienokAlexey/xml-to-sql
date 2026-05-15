@@ -2,27 +2,20 @@
 
 namespace app\Core;
 
+use app\Core\Request;
+
 class Convert
 {
-    public static function getData($xml)
+    public static function getJson()
     {
-        $input = fopen('php://input', 'r');
+        $contents = Request::getEntityBody();
         
-        $contents = stream_get_contents($input);
-        fclose($input);
-
-        if (empty($contents)) {
-            echo('Остутствуют входящие данные');
-            die();
-        }
-
         if (!simplexml_load_string($contents)) {
-            echo ('Не усдается распознать xml-файл');
-            die();
-        } else {
-            $xml = simplexml_load_string($contents);
-            $json = json_encode($xml);
-            echo($json);
+            error_log('The xml file cannot be recognized');
+            die('Не удается распознать xml-файл');
         }
+
+        $xml = simplexml_load_string($contents);
+        return json_encode($xml);
     }
 }

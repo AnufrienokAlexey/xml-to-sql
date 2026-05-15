@@ -57,4 +57,16 @@ class Db
         }
     }
 
+        public static function createTable(string $table): void
+    {
+        try {
+            $stm = Db::getInstance()->prepare(
+                "CREATE TABLE IF NOT EXISTS $table;"
+            );
+            $stm->execute();
+        } catch (\PDOException $e) {
+            error_log($e->getMessage());
+        }
+    }
+
 }
