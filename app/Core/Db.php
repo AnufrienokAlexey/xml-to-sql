@@ -57,16 +57,31 @@ class Db
         }
     }
 
-        public static function createTable(string $table): void
+    public static function createTable(string $table)
     {
         try {
             $stm = Db::getInstance()->prepare(
-                "CREATE TABLE IF NOT EXISTS $table;"
+                "CREATE TABLE IF NOT EXISTS $table (id INT PRIMARY KEY)
+                ENGINE=InnoDB
+                DEFAULT CHARSET=utf8mb4
+                COLLATE=utf8mb4_0900_ai_ci;"
             );
-            $stm->execute();
+            return $stm->execute();
         } catch (\PDOException $e) {
             error_log($e->getMessage());
         }
     }
 
+    public static function createColumn(string $table, string $column)
+    {
+        try {
+            $stm = Db::getInstance()->prepare(
+                "ALTER TABLE $table ADD $column VARCHAR(100) NOT NULL;"
+            );
+            dump($stm);
+            return $stm->execute();
+        } catch (\PDOException $e) {
+            error_log($e->getMessage());
+        }
+    }
 }

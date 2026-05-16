@@ -13,16 +13,22 @@ class DataModel
 
     public static function setData(array $array)
     {
-        $sqlArray = null;
-        $sql = null;
-        // $sql = "SELECT * FROM";
-        // $pdo = Db::getInstance()->prepare($sql);
-        dump($array);
-
-        foreach ($array as $table) {
-            if (count($table) > 1) {
-                foreach ($table as $key => $column) {
-                    $sql =
+        foreach ($array as $table => $value) {
+            if(Db::createTable($table)) {
+                if (array_is_list($value)) {
+                    foreach($value as $key => $item) {
+                        foreach ($item as $column => $data) {
+                            if (Db::createColumn($table, $column)) {
+                                dump("okk"); //createData
+                            }
+                        }
+                    } 
+                } else {
+                    foreach ($value as $v => $data) {
+                        if (Db::createColumn($table, $v)) {
+                            dump("okkkkkkkk"); //createData
+                        }
+                    }
                 }
             }
         }
