@@ -45,13 +45,14 @@ class Db
         return "Error: " . $e->getMessage();
     }
 
-    private static function createDb(string $dbname): void
+    public static function createDb()
     {
+        $dbname = getenv('DB_NAME');
         try {
-            $stm = Db::getInstance()->prepare(
+            $stm = Host::getInstance()->prepare(
                 "CREATE DATABASE IF NOT EXISTS $dbname COLLATE utf8_general_ci;"
             );
-            $stm->execute();
+            return $stm->execute();
         } catch (\PDOException $e) {
             error_log($e->getMessage());
         }
@@ -60,7 +61,7 @@ class Db
     public static function createTable(string $table)
     {
         try {
-            $stm = Db::getInstance()->prepare(
+            $stm = self::getInstance()->prepare(
                 "CREATE TABLE IF NOT EXISTS $table (id INT PRIMARY KEY)
                 ENGINE=InnoDB
                 DEFAULT CHARSET=utf8mb4
@@ -75,13 +76,35 @@ class Db
     public static function createColumn(string $table, string $column)
     {
         try {
-            $stm = Db::getInstance()->prepare(
+            $stm = self::getInstance()->prepare(
                 "ALTER TABLE $table ADD $column VARCHAR(100) NOT NULL;"
             );
-            dump($stm);
             return $stm->execute();
         } catch (\PDOException $e) {
             error_log($e->getMessage());
+        }
+    }
+
+    public static function setData(array $array)
+    {
+        foreach ($array as $table => $value) {
+            if(self::createTable($table)) {
+                if (array_is_list($value)) {
+                    foreach($value as $key => $item) {
+                        foreach ($item as $column => $data) {
+                            if (self::createColumn($table, $column)) {
+                                dump("okk"); //createData
+                            }
+                        }
+                    } 
+                } else {
+                    foreach ($value as $v => $data) {
+                        if (self::createColumn($table, $v)) {
+                            dump("okkkkkkkk"); //createData
+                        }
+                    }
+                }
+            }
         }
     }
 }
