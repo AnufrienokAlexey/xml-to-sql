@@ -5,6 +5,7 @@ namespace app\Core;
 use app\Models\DataModel;
 use PDO;
 use PDOException;
+use Stringable;
 
 class Db
 {
@@ -61,6 +62,8 @@ class Db
 
     public static function createTable(string $table)
     {
+        $table = addslashes($table);
+
         try {
             $stm = self::getInstance()->prepare(
                 "CREATE TABLE IF NOT EXISTS $table (`id` INT AUTO_INCREMENT PRIMARY KEY)
@@ -76,9 +79,12 @@ class Db
 
     public static function createColumn(string $table, string $column)
     {
+        $table = addslashes($table);
+        $column = addslashes($column);
+
         try {
             $stm = self::getInstance()->prepare(
-                "ALTER TABLE $table ADD $column VARCHAR(100) NOT NULL;"
+                "ALTER TABLE $table ADD $column TEXT;"
             );
             return $stm->execute();
         } catch (\PDOException $e) {
@@ -94,16 +100,17 @@ class Db
                     foreach($value as $key => $item) {
                         foreach ($item as $column => $data) {
                             if (self::createColumn($table, $column)) {
-                                echo("Колонка успешно создана");
+                                echo("Колонка успешно создана" . PHP_EOL);
                             }
-                            // dump(DataModel::setData($table, $column, $data));
+                            DataModel::insertData($table, $column, $data);
                         }
                     } 
                 } else {
-                    foreach ($value as $v => $data) {
-                        if (self::createColumn($table, $v)) {
-                            echo("Колонка успешно создана");
+                    foreach ($value as $column => $data) {
+                        if (self::createColumn($table, $column)) {
+                            echo("Колонка успешно создана" . PHP_EOL);
                         }
+                        DataModel::insertData($table, $column, $data);
                     }
                 }
             }

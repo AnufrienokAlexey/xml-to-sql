@@ -13,6 +13,7 @@ class DataService
         if (json_last_error() !== JSON_ERROR_NONE) {
             die('При расшифровке JSON данных произошла ошибка: ' . json_last_error_msg());
         }
+        dump($array);
         return $array;
     }
 }
