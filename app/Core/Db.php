@@ -2,6 +2,7 @@
 
 namespace app\Core;
 
+use app\Models\DataModel;
 use PDO;
 use PDOException;
 
@@ -62,7 +63,7 @@ class Db
     {
         try {
             $stm = self::getInstance()->prepare(
-                "CREATE TABLE IF NOT EXISTS $table (id INT PRIMARY KEY)
+                "CREATE TABLE IF NOT EXISTS $table (`id` INT AUTO_INCREMENT PRIMARY KEY)
                 ENGINE=InnoDB
                 DEFAULT CHARSET=utf8mb4
                 COLLATE=utf8mb4_0900_ai_ci;"
@@ -93,14 +94,15 @@ class Db
                     foreach($value as $key => $item) {
                         foreach ($item as $column => $data) {
                             if (self::createColumn($table, $column)) {
-                                dump("okk"); //createData
+                                echo("Колонка успешно создана");
                             }
+                            // dump(DataModel::setData($table, $column, $data));
                         }
                     } 
                 } else {
                     foreach ($value as $v => $data) {
                         if (self::createColumn($table, $v)) {
-                            dump("okkkkkkkk"); //createData
+                            echo("Колонка успешно создана");
                         }
                     }
                 }
