@@ -11,6 +11,7 @@ use app\Core\Host;
 use app\Core\Registry;
 use app\Core\Request;
 use PhpDevCommunity\DotEnv;
+use app\Models\DataModel;
 
 $microTime = microtime(true);
 

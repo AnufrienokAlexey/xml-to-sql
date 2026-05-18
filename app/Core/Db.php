@@ -2,10 +2,10 @@
 
 namespace app\Core;
 
+use app\Core\Host;
 use app\Models\DataModel;
 use PDO;
 use PDOException;
-use Stringable;
 
 class Db
 {
@@ -52,7 +52,7 @@ class Db
         $dbname = getenv('DB_NAME');
         try {
             $stm = Host::getInstance()->prepare(
-                "CREATE DATABASE IF NOT EXISTS $dbname COLLATE utf8_general_ci;"
+                "CREATE DATABASE IF NOT EXISTS $dbname CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"
             );
             return $stm->execute();
         } catch (\PDOException $e) {
@@ -62,16 +62,30 @@ class Db
 
     public static function createTable(string $table)
     {
-        $table = addslashes($table);
+        if (!self::isTableExist($table)) {
+            try {
+                $stm = self::getInstance()->prepare(
+                    "CREATE TABLE IF NOT EXISTS $table (`id` INT AUTO_INCREMENT PRIMARY KEY)
+                    ENGINE=InnoDB
+                    DEFAULT CHARSET=utf8mb4
+                    COLLATE=utf8mb4_0900_ai_ci;"
+                );
+                return $stm->execute();
+            } catch (\PDOException $e) {
+                error_log($e->getMessage());
+            }
+        }
+    }
 
+    public static function isTableExist(string $table)
+    {
         try {
-            $stm = self::getInstance()->prepare(
-                "CREATE TABLE IF NOT EXISTS $table (`id` INT AUTO_INCREMENT PRIMARY KEY)
-                ENGINE=InnoDB
-                DEFAULT CHARSET=utf8mb4
-                COLLATE=utf8mb4_0900_ai_ci;"
+            $stm = Db::getInstance()->prepare(
+                "SHOW TABLES"
             );
-            return $stm->execute();
+            $stm->execute();
+            $res = $stm->fetchAll(PDO::FETCH_COLUMN);
+            return in_array($table, $res);
         } catch (\PDOException $e) {
             error_log($e->getMessage());
         }
@@ -79,14 +93,29 @@ class Db
 
     public static function createColumn(string $table, string $column)
     {
-        $table = addslashes($table);
-        $column = addslashes($column);
+        dump(self::isColumnExist($table, $column));
+        // if (self::isColumnExist($table, $column)) {
+        //     try {
+        //         $stm = self::getInstance()->prepare(
+        //             "ALTER TABLE $table ADD :column TEXT;"
+        //         );
+        //         $stm->bindColumn(':column', $column);
+        //         return $stm->execute();
+        //     } catch (\PDOException $e) {
+        //         error_log($e->getMessage());
+        //     }
+        // }
+    }
 
+    public static function isColumnExist(string $table, string $column)
+    {
         try {
-            $stm = self::getInstance()->prepare(
-                "ALTER TABLE $table ADD $column TEXT;"
+            $stm = Db::getInstance()->prepare(
+                "DESCRIBE $table"
             );
-            return $stm->execute();
+            $stm->execute();
+            $res = $stm->fetchAll(PDO::FETCH_COLUMN);
+            return in_array($column, $res);
         } catch (\PDOException $e) {
             error_log($e->getMessage());
         }
@@ -95,25 +124,29 @@ class Db
     public static function setData(array $array)
     {
         foreach ($array as $table => $value) {
-            if(self::createTable($table)) {
-                if (array_is_list($value)) {
-                    foreach($value as $key => $item) {
-                        foreach ($item as $column => $data) {
-                            if (self::createColumn($table, $column)) {
-                                echo("Колонка успешно создана" . PHP_EOL);
-                            }
-                            DataModel::insertData($table, $column, $data);
-                        }
-                    } 
-                } else {
-                    foreach ($value as $column => $data) {
+            // if(self::createTable($table)) {
+            // self::createTable($table);
+            if (self::createTable($table)) {
+                echo("Таблица $table успешно создана" . PHP_EOL);
+            }
+            if (array_is_list($value)) {
+                foreach($value as $item) {
+                    foreach ($item as $column => $data) {
                         if (self::createColumn($table, $column)) {
-                            echo("Колонка успешно создана" . PHP_EOL);
+                            echo("Колонка $column в таблице $table успешно создана" . PHP_EOL);
                         }
-                        DataModel::insertData($table, $column, $data);
+                        // DataModel::insertData($table, $column, $data);
                     }
+                } 
+            } else {
+                foreach ($value as $column => $data) {
+                    if (self::createColumn($table, $column)) {
+                        echo("Колонка $column в таблице $table успешно создана" . PHP_EOL);
+                    }
+                    // DataModel::insertData($table, $column, $data);
                 }
             }
+            // }
         }
     }
 }

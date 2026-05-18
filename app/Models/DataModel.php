@@ -10,22 +10,22 @@ class DataModel extends Db
 {
     public static function insertData(string $table, string $column, string $data)
     {
-        $table = addslashes($table);
-        $column = addslashes($column);
-        $data = addslashes($data);
-        dump($table, $column, $data);
+        dump("table = $table");
+        dump("column = $column");
+        dump("data = $data");
 
         if (!self::isExistData($table, $column, $data)) {
             try {
                 $stm = parent::getInstance()->prepare(
-                    "INSERT INTO $table ($column) VALUES ($data);"
+                    "INSERT INTO $table (:column) VALUES (:data);"
                 );
-                dump($stm->execute());
+                $stm->bindParam(':column', $column);
+                $stm->bindParam(':data', $data);
             } catch (\PDOException $e) {
                 error_log($e->getMessage());
             }
         } else {
-            dump("data is existed");
+            dump("данные уже добавлены были ранее");
         }
     }
 
@@ -33,8 +33,11 @@ class DataModel extends Db
     {
         try {
             $stm = parent::getInstance()->prepare(
-                "SELECT * FROM $table WHERE $column = `$data`;"
+                "SELECT * FROM $table WHERE :column = :data;"
             );
+            $stm->bindParam(':column', $column);
+            $stm->bindParam(':data', $data);
+            $stm->execute();
             return $stm->execute();
         } catch (\PDOException $e) {
             error_log($e->getMessage());

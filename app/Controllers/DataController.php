@@ -3,7 +3,6 @@
 namespace app\Controllers;
 
 use app\Core\Db;
-use app\Models\DataModel;
 use app\Services\DataService;
 
 class DataController
