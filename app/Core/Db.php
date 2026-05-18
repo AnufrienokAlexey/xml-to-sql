@@ -93,18 +93,17 @@ class Db
 
     public static function createColumn(string $table, string $column)
     {
-        dump(self::isColumnExist($table, $column));
-        // if (self::isColumnExist($table, $column)) {
-        //     try {
-        //         $stm = self::getInstance()->prepare(
-        //             "ALTER TABLE $table ADD :column TEXT;"
-        //         );
-        //         $stm->bindColumn(':column', $column);
-        //         return $stm->execute();
-        //     } catch (\PDOException $e) {
-        //         error_log($e->getMessage());
-        //     }
-        // }
+        if(!self::isColumnExist($table, $column)) {
+            try {
+                $stm = self::getInstance()->prepare(
+                    "ALTER TABLE $table ADD :column TEXT;"
+                );
+                $stm->bindColumn(':column', $column);
+                return $stm->execute();
+            } catch (\PDOException $e) {
+                error_log($e->getMessage());
+            }
+        }
     }
 
     public static function isColumnExist(string $table, string $column)
@@ -124,8 +123,6 @@ class Db
     public static function setData(array $array)
     {
         foreach ($array as $table => $value) {
-            // if(self::createTable($table)) {
-            // self::createTable($table);
             if (self::createTable($table)) {
                 echo("Таблица $table успешно создана" . PHP_EOL);
             }
@@ -146,7 +143,6 @@ class Db
                     // DataModel::insertData($table, $column, $data);
                 }
             }
-            // }
         }
     }
 }
